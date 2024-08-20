@@ -15,7 +15,9 @@ describe("Clothing Controller", () => {
   });
 
   test("should fetch all clothing items", async () => {
-    const mockClothing = [{ id: "1", name: "T-Shirt" }];
+    const mockClothing = [
+      { id: "1", color: "Red", size: "M", price: 20, stock: 10 },
+    ];
     clothingRepository.getAllClothing.mockResolvedValue(mockClothing);
 
     const response = await request(app).get("/clothing");
@@ -27,7 +29,7 @@ describe("Clothing Controller", () => {
   });
 
   test("should add new clothing item", async () => {
-    const newClothingData = { name: "Hoodie", color: "Red", size: "M" };
+    const newClothingData = { color: "Red", size: "M", price: 20, stock: 10 };
     const mockNewClothing = { id: "2", ...newClothingData };
     clothingRepository.addClothing.mockResolvedValue(mockNewClothing);
 
@@ -40,7 +42,9 @@ describe("Clothing Controller", () => {
   });
 
   test("should search clothing by color", async () => {
-    const mockClothing = [{ id: "1", color: "Blue" }];
+    const mockClothing = [
+      { id: "1", color: "Blue", size: "L", price: 25, stock: 5 },
+    ];
     clothingRepository.findClothingByColor.mockResolvedValue(mockClothing);
 
     const response = await request(app)
@@ -59,12 +63,14 @@ describe("Clothing Controller", () => {
     expect(response.status).toBe(400);
     expect(response.body.code).toBe(400);
     expect(response.body.message).toBe(
-      "Warning `color` query parameter is required."
+      "Bad Request: `color` query parameter is required."
     );
   });
 
   test("should search clothing by size", async () => {
-    const mockClothing = [{ id: "1", size: "L" }];
+    const mockClothing = [
+      { id: "1", color: "Green", size: "L", price: 30, stock: 3 },
+    ];
     clothingRepository.findClothingBySize.mockResolvedValue(mockClothing);
 
     const response = await request(app)
@@ -83,13 +89,19 @@ describe("Clothing Controller", () => {
     expect(response.status).toBe(400);
     expect(response.body.code).toBe(400);
     expect(response.body.message).toBe(
-      "Warning `size` query parameter is required."
+      "Bad Request: `size` query parameter is required."
     );
   });
 
   test("should search clothing by search query", async () => {
     const mockClothing = [
-      { id: "1", name: "T-Shirt", color: "Blue", size: "L" },
+      {
+        id: "1",
+        color: "Blue",
+        size: "L",
+        price: 25,
+        stock: 5,
+      },
     ];
     clothingRepository.findClothingLikeBySizeOrColor.mockResolvedValue(
       mockClothing
@@ -106,7 +118,13 @@ describe("Clothing Controller", () => {
   });
 
   test("should increase stock successfully", async () => {
-    const mockUpdatedClothing = { id: "1", stock: 20 };
+    const mockUpdatedClothing = {
+      id: "1",
+      color: "Red",
+      size: "M",
+      price: 20,
+      stock: 20,
+    };
     clothingRepository.increaseStock.mockResolvedValue(mockUpdatedClothing);
 
     const response = await request(app)
@@ -120,7 +138,13 @@ describe("Clothing Controller", () => {
   });
 
   test("should decrease stock successfully", async () => {
-    const mockClothing = { id: "1", stock: 20 };
+    const mockClothing = {
+      id: "1",
+      color: "Red",
+      size: "M",
+      price: 20,
+      stock: 20,
+    };
     clothingRepository.getClothingById.mockResolvedValue(mockClothing);
     clothingRepository.decreaseStock.mockResolvedValue({
       ...mockClothing,
@@ -138,7 +162,13 @@ describe("Clothing Controller", () => {
   });
 
   test("should return 400 if insufficient stock when decreasing", async () => {
-    const mockClothing = { id: "1", stock: 5 };
+    const mockClothing = {
+      id: "1",
+      color: "Red",
+      size: "M",
+      price: 20,
+      stock: 5,
+    };
     clothingRepository.getClothingById.mockResolvedValue(mockClothing);
 
     const response = await request(app)
@@ -151,7 +181,9 @@ describe("Clothing Controller", () => {
   });
 
   test("should get all available clothing", async () => {
-    const mockClothing = [{ id: "1", stock: 10 }];
+    const mockClothing = [
+      { id: "1", color: "Red", size: "M", price: 20, stock: 10 },
+    ];
     clothingRepository.getAllAvailableClothing.mockResolvedValue(mockClothing);
 
     const response = await request(app).get("/clothing/available");
@@ -165,7 +197,9 @@ describe("Clothing Controller", () => {
   });
 
   test("should get out-of-stock clothing", async () => {
-    const mockClothing = [{ id: "1", stock: 0 }];
+    const mockClothing = [
+      { id: "1", color: "Black", size: "S", price: 15, stock: 0 },
+    ];
     clothingRepository.getOutOfStockClothing.mockResolvedValue(mockClothing);
 
     const response = await request(app).get("/clothing/out-of-stock");
@@ -179,7 +213,9 @@ describe("Clothing Controller", () => {
   });
 
   test("should get low-stock clothing", async () => {
-    const mockClothing = [{ id: "1", stock: 3 }];
+    const mockClothing = [
+      { id: "1", color: "Green", size: "L", price: 25, stock: 3 },
+    ];
     clothingRepository.getLowStockClothing.mockResolvedValue(mockClothing);
 
     const response = await request(app).get("/clothing/low-stock");
@@ -193,7 +229,13 @@ describe("Clothing Controller", () => {
   });
 
   test("should get clothing by ID", async () => {
-    const mockClothing = { id: "1", name: "T-Shirt" };
+    const mockClothing = {
+      id: "1",
+      color: "Blue",
+      size: "M",
+      price: 30,
+      stock: 10,
+    };
     clothingRepository.getClothingById.mockResolvedValue(mockClothing);
 
     const response = await request(app).get("/clothing/1");
@@ -215,8 +257,13 @@ describe("Clothing Controller", () => {
   });
 
   test("should update clothing", async () => {
-    const updatedData = { name: "Updated T-Shirt" };
-    const mockUpdatedClothing = { id: "1", ...updatedData };
+    const updatedData = { color: "Updated Red", price: 22 };
+    const mockUpdatedClothing = {
+      id: "1",
+      ...updatedData,
+      size: "M",
+      stock: 10,
+    };
     clothingRepository.updateClothing.mockResolvedValue(mockUpdatedClothing);
 
     const response = await request(app).put("/clothing/1").send(updatedData);
@@ -232,7 +279,7 @@ describe("Clothing Controller", () => {
 
     const response = await request(app)
       .put("/clothing/1")
-      .send({ name: "Updated T-Shirt" });
+      .send({ color: "Updated Red" });
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe(404);
