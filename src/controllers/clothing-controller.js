@@ -20,6 +20,20 @@ export const getAllClothing = async (req, res) => {
 export const addClothing = async (req, res) => {
   try {
     const clothingData = req.body;
+
+    if (
+      !clothingData.color ||
+      !clothingData.size ||
+      !clothingData.price ||
+      !clothingData.stock
+    ) {
+      return res.status(400).json({
+        code: 400,
+        message:
+          "Bad Request: Missing required fields (color, size, price, stock).",
+      });
+    }
+
     const newClothing = await clothingRepository.addClothing(clothingData);
     return res.status(201).json({
       code: 201,
@@ -42,7 +56,7 @@ export const findClothingByColor = async (req, res) => {
     if (!color) {
       return res.status(400).json({
         code: 400,
-        message: "Warning `color` query parameter is required.",
+        message: "Bad Request: `color` query parameter is required.",
       });
     }
 
@@ -69,7 +83,7 @@ export const findClothingBySize = async (req, res) => {
     if (!size) {
       return res.status(400).json({
         code: 400,
-        message: "Warning `size` query parameter is required.",
+        message: "Bad Request: `size` query parameter is required.",
       });
     }
 
@@ -115,6 +129,14 @@ export const searchClothing = async (req, res) => {
 export const increaseStock = async (req, res) => {
   try {
     const { id, quantity } = req.body;
+
+    if (!id || !quantity) {
+      return res.status(400).json({
+        code: 400,
+        message: "Bad Request: Missing required fields (id, quantity).",
+      });
+    }
+
     const updatedClothing = await clothingRepository.increaseStock(
       id,
       quantity
@@ -136,6 +158,13 @@ export const increaseStock = async (req, res) => {
 export const decreaseStock = async (req, res) => {
   try {
     const { id, quantity } = req.body;
+
+    if (!id || !quantity) {
+      return res.status(400).json({
+        code: 400,
+        message: "Bad Request: Missing required fields (id, quantity).",
+      });
+    }
 
     const clothing = await clothingRepository.getClothingById(id);
 
@@ -225,6 +254,14 @@ export const getLowStockClothing = async (req, res) => {
 export const getClothingById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: "Bad Request: `id` parameter is required.",
+      });
+    }
+
     const clothing = await clothingRepository.getClothingById(id);
     if (clothing) {
       return res.status(200).json({
@@ -251,6 +288,15 @@ export const updateClothing = async (req, res) => {
   try {
     const { id } = req.params;
     const clothingData = req.body;
+
+    if (!id || !clothingData) {
+      return res.status(400).json({
+        code: 400,
+        message:
+          "Bad Request: Missing required fields (id or clothing data { color, size, price, stock }).",
+      });
+    }
+
     const updatedClothing = await clothingRepository.updateClothing(
       id,
       clothingData
@@ -279,6 +325,14 @@ export const updateClothing = async (req, res) => {
 export const deleteClothing = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: "Bad Request: `id` parameter is required.",
+      });
+    }
+
     const deletedClothing = await clothingRepository.deleteClothing(id);
     if (deletedClothing) {
       return res.status(200).json({
